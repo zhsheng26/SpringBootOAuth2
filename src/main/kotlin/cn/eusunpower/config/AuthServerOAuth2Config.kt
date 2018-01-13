@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.core.AuthenticationException
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer
@@ -14,6 +15,11 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer
 import org.springframework.security.oauth2.provider.token.TokenStore
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore
+import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.stereotype.Component
+import java.io.IOException
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 
 @Configuration
@@ -24,6 +30,7 @@ class AuthServerOAuth2Config : AuthorizationServerConfigurerAdapter() {
     var authenticationManager: AuthenticationManager? = null
     @Autowired
     var redisConnectionFactory: RedisConnectionFactory? = null
+
 
     @Throws(Exception::class)
     override fun configure(oauthServer: AuthorizationServerSecurityConfigurer) {
@@ -45,7 +52,7 @@ class AuthServerOAuth2Config : AuthorizationServerConfigurerAdapter() {
         clients.inMemory()
                 .withClient(YClient.CLIENT_ID)
                 .secret(YClient.CLIENT_PW)
-                .scopes("get", "post", "delete", "put")
+                .scopes("get", "post", "delete", "put", "all")
                 .authorizedGrantTypes("password", "refresh_token")
                 .accessTokenValiditySeconds(30)
                 .refreshTokenValiditySeconds(2592000) // 30 days
@@ -62,6 +69,14 @@ class AuthServerOAuth2Config : AuthorizationServerConfigurerAdapter() {
     @Bean
     fun tokenStore(): TokenStore {
         return RedisTokenStore(redisConnectionFactory)
+    }
+}
+
+@Component
+class RestAuthenticationEntryPoint : AuthenticationEntryPoint {
+    @Throws(IOException::class)
+    override fun commence(request: HttpServletRequest, response: HttpServletResponse, authException: AuthenticationException) {
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
     }
 
 }

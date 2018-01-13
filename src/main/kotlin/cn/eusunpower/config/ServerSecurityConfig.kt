@@ -3,6 +3,7 @@ package cn.eusunpower.config
 import cn.eusunpower.model.entity.RoleEntity
 import cn.eusunpower.repository.RoleRepository
 import cn.eusunpower.repository.UserRepository
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -14,6 +15,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
 import org.springframework.stereotype.Service
 import javax.annotation.Resource
 import javax.transaction.Transactional
@@ -21,6 +26,8 @@ import javax.transaction.Transactional
 @Configuration
 @EnableWebSecurity
 class ServerSecurityConfig : WebSecurityConfigurerAdapter() {
+    @Autowired
+    lateinit var restAuthenticationEntryPoint: RestAuthenticationEntryPoint
 
     @Bean
     @Throws(Exception::class)
@@ -32,10 +39,24 @@ class ServerSecurityConfig : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         http.antMatcher("/**")
                 .authorizeRequests()
+                .and()
+                .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
+                .and()
+                .authorizeRequests()
                 .antMatchers("/", "/login**", "/oauth/*").permitAll()
                 .anyRequest()
                 .authenticated()
     }
+
+    @Bean
+    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
+
+    @Bean
+    fun mySuccessHandler(): SimpleUrlAuthenticationSuccessHandler =
+            SimpleUrlAuthenticationSuccessHandler()
+
+    @Bean
+    fun myFailureHandler(): SimpleUrlAuthenticationFailureHandler = SimpleUrlAuthenticationFailureHandler()
 
 }
 
