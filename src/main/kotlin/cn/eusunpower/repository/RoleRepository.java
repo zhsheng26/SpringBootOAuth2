@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface RoleRepository extends JpaRepository<RoleEntity, String> {
+    RoleEntity findRoleEntityByName(String name);
+
     /**
      * 通过用户ID查询此用户的角色(返回的是角色列表)
      */
