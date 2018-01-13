@@ -12,7 +12,7 @@ public interface RoleRepository extends JpaRepository<RoleEntity, String> {
     /**
      * 通过用户ID查询此用户的角色(返回的是角色列表)
      */
-    @Query("SELECT r FROM Role r JOIN r.users u WHERE u.id=:id")
+    @Query("SELECT r FROM RoleEntity r JOIN r.users u WHERE u.id=:id")
     List<RoleEntity> findAllByUserId(@Param("id") String id);
 
     /**
@@ -23,6 +23,6 @@ public interface RoleRepository extends JpaRepository<RoleEntity, String> {
     /**
      * 查询用户角色的个数
      */
-    @Query("SELECT COUNT(r) FROM Role r JOIN r.users u WHERE u.id=:id")
+    @Query("SELECT COUNT(r) FROM RoleEntity r JOIN r.users u WHERE u.id=:id")
     Long countRolesByUserId(@Param("id") String uid);
 }

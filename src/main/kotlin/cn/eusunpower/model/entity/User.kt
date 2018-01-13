@@ -4,7 +4,7 @@ import cn.eusunpower.model.base.BaseEntity
 import javax.persistence.*
 
 @Entity
-@Table(name = "yl_user")
+@Table(name = "y_user")
 data class UserEntity(
         @Column(nullable = false, unique = true)
         var account: String = "",
@@ -15,12 +15,12 @@ data class UserEntity(
 ) : BaseEntity()
 
 @Entity
-@Table(name = "yl_role")
+@Table(name = "y_role")
 data class RoleEntity(
         @Column(nullable = false, unique = true)
         var name: String = "",
         @ManyToMany
-        @JoinTable(name = "user_role",
+        @JoinTable(name = "y_user_role",
                 joinColumns = [(JoinColumn(name = "userId"))],
                 inverseJoinColumns = [(JoinColumn(name = "roleId"))])
         var users: List<UserEntity> = ArrayList()
