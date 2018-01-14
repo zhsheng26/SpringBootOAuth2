@@ -61,7 +61,7 @@ class ServerSecurityConfig : WebSecurityConfigurerAdapter() {
 }
 
 @Transactional
-@Service("userDetailService")
+@Service("userDetailsService")
 class YlUserDetailService : UserDetailsService {
     @Resource
     lateinit var userRepository: UserRepository

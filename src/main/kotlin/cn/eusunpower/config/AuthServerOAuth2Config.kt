@@ -2,12 +2,14 @@ package cn.eusunpower.config
 
 import cn.eusunpower.support.YClient
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.AuthenticationException
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer
@@ -27,10 +29,13 @@ import javax.servlet.http.HttpServletResponse
 class AuthServerOAuth2Config : AuthorizationServerConfigurerAdapter() {
 
     @Autowired
-    var authenticationManager: AuthenticationManager? = null
+    lateinit var authenticationManager: AuthenticationManager
     @Autowired
-    var redisConnectionFactory: RedisConnectionFactory? = null
+    lateinit var redisConnectionFactory: RedisConnectionFactory
 
+    @Autowired
+    @Qualifier("userDetailsService")
+    lateinit var userDetailsService: UserDetailsService
 
     @Throws(Exception::class)
     override fun configure(oauthServer: AuthorizationServerSecurityConfigurer) {
@@ -61,8 +66,9 @@ class AuthServerOAuth2Config : AuthorizationServerConfigurerAdapter() {
     @Throws(Exception::class)
     override fun configure(endpoints: AuthorizationServerEndpointsConfigurer) {
         endpoints.tokenStore(tokenStore())
-                .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PUT)
+                .userDetailsService(userDetailsService)
                 .authenticationManager(authenticationManager)
+                .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PUT)
     }
 
 
