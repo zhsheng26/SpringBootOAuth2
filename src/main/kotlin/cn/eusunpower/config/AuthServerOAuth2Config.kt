@@ -8,13 +8,19 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer
+import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer
 import org.springframework.security.oauth2.provider.token.TokenStore
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore
 import org.springframework.security.web.AuthenticationEntryPoint
@@ -23,6 +29,23 @@ import java.io.IOException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+
+@Configuration
+@EnableResourceServer
+class ResourceServerConfiguration : ResourceServerConfigurerAdapter() {
+
+    override fun configure(resources: ResourceServerSecurityConfigurer) {
+        resources.resourceId(YClient.CLIENT_ID)
+    }
+
+    @Throws(Exception::class)
+    override fun configure(http: HttpSecurity) {
+        http.anonymous().disable()
+                .authorizeRequests()
+                .anyRequest().authenticated()
+    }
+
+}
 
 @Configuration
 @EnableAuthorizationServer
@@ -59,8 +82,8 @@ class AuthServerOAuth2Config : AuthorizationServerConfigurerAdapter() {
                 .secret(YClient.CLIENT_PW)
                 .scopes("get", "post", "delete", "put", "all")
                 .authorizedGrantTypes("password", "refresh_token")
-                .accessTokenValiditySeconds(30)
-                .refreshTokenValiditySeconds(2592000) // 30 days
+//                .accessTokenValiditySeconds(30)
+//                .refreshTokenValiditySeconds(2592000) // 30 days
     }
 
     @Throws(Exception::class)
@@ -85,4 +108,15 @@ class RestAuthenticationEntryPoint : AuthenticationEntryPoint {
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
     }
 
+}
+
+interface IAuthenticationFacade {
+    fun getAuthentication(): Authentication
+}
+
+@Component
+class AuthenticationFacade : IAuthenticationFacade {
+    override fun getAuthentication(): Authentication {
+        return SecurityContextHolder.getContext().authentication
+    }
 }

@@ -33,8 +33,8 @@ object IError {
     val CODE_ARGUMENT_NOT_NULL = 10021
     val CODE_POST_NOT_FOUND = 10022
     //错误消息
-    val MSG_SUCCESS = "成功"
-    val MSG_FAIL = "失败"
+    val MSG_SUCCESS = "请求成功"
+    val MSG_FAIL = "请求失败"
     val MSG_USER_NOT_FOUND = "找不到此用户."
     val MSG_USER_INFO_NOT_NULL = "用户信息不能为空."
     val MSG_LOGIN_ERROR = "登录失败,请检查账号密码."
