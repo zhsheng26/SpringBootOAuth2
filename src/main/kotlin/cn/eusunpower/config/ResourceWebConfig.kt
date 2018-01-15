@@ -3,10 +3,7 @@ package cn.eusunpower.config
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer
-import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer
-import org.springframework.web.servlet.config.annotation.EnableWebMvc
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
+import org.springframework.web.servlet.config.annotation.*
 
 
 @Configuration
@@ -25,5 +22,16 @@ class ResourceWebConfig : WebMvcConfigurerAdapter() {
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry.addResourceHandler("/resources/**")
                 .addResourceLocations("/resources/")
+    }
+
+    @Bean
+    fun verifyInterceptor(): Interceptor {
+        return Interceptor()
+    }
+
+
+    override fun addInterceptors(registry: InterceptorRegistry) {
+        registry.addInterceptor(verifyInterceptor())
+        super.addInterceptors(registry)
     }
 }

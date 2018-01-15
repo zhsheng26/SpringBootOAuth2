@@ -1,6 +1,7 @@
 package cn.eusunpower.model.base
 
 import cn.eusunpower.support.EntityListener
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.hibernate.annotations.GenericGenerator
 import java.io.Serializable
 import java.util.*
@@ -8,6 +9,7 @@ import javax.persistence.*
 
 @MappedSuperclass
 @EntityListeners(EntityListener::class)
+@JsonIgnoreProperties("createDate", "updateDate", "deleted")
 open class BaseEntity : Serializable {
     @Id
     @GeneratedValue(generator = "uuid")

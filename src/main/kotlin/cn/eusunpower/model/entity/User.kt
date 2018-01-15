@@ -1,6 +1,7 @@
 package cn.eusunpower.model.entity
 
 import cn.eusunpower.model.base.BaseEntity
+import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.*
 
 @Entity
@@ -10,6 +11,7 @@ data class UserEntity(
         var account: String = "",
         @Column(nullable = false, unique = true)
         var nickname: String = "",
+        @JsonIgnore
         var password: String = "",
         var mobile: String = ""
 ) : BaseEntity()
