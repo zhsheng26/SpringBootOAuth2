@@ -1,5 +1,7 @@
 package cn.eusunpower.config
 
+import cn.eusunpower.model.entity.UserEntity
+import cn.eusunpower.repository.UserRepository
 import cn.eusunpower.support.YClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -112,11 +114,20 @@ class RestAuthenticationEntryPoint : AuthenticationEntryPoint {
 
 interface IAuthenticationFacade {
     fun getAuthentication(): Authentication
+    fun getCurrentUser(): UserEntity
 }
 
 @Component
 class AuthenticationFacade : IAuthenticationFacade {
+    @Autowired
+    lateinit var userRepository: UserRepository
+
     override fun getAuthentication(): Authentication {
         return SecurityContextHolder.getContext().authentication
+    }
+
+    override fun getCurrentUser(): UserEntity {
+        val account = getAuthentication().name
+        return userRepository.findUserEntityByAccount(account)
     }
 }

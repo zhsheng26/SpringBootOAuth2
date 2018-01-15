@@ -23,5 +23,5 @@ data class RoleEntity(
         @JoinTable(name = "Y_USER_ROLE",
                 joinColumns = [(JoinColumn(name = "userId"))],
                 inverseJoinColumns = [(JoinColumn(name = "roleId"))])
-        var users: List<UserEntity> = ArrayList()
+        var users: List<UserEntity> = arrayListOf()
 ) : BaseEntity()
