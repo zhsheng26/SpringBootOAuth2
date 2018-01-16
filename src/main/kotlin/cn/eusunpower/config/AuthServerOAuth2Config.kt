@@ -42,8 +42,12 @@ class ResourceServerConfiguration : ResourceServerConfigurerAdapter() {
 
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
-        http.anonymous().disable()
+        http.requestMatchers().anyRequest()
+                .and()
+                .anonymous()
+                .and()
                 .authorizeRequests()
+                .antMatchers("/", "/login**", "/oauth/*").permitAll()
                 .anyRequest().authenticated()
     }
 

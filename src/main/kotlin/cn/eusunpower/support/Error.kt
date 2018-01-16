@@ -1,5 +1,7 @@
 package cn.eusunpower.support
 
+import org.apache.log4j.Logger
+import org.springframework.security.core.AuthenticationException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseBody
@@ -66,9 +68,24 @@ data class IErrorResponse<out T>(val code: Int = IError.CODE_FAIL, val data: T? 
 
 @ControllerAdvice
 class GlobalExceptionHandler {
-    @ExceptionHandler(value = [(IException::class)])
+
+    private val logger = Logger.getLogger("EXCEPTION")
+
+    @ExceptionHandler(value = [IException::class])
     @ResponseBody
     fun jsonErrorHandler(e: IException, request: HttpServletRequest): IErrorResponse<Nothing> {
+        logger.error("request : ${request.requestURI} , happen exception : ${e.message}")
         return IErrorResponse(e.code, null, e.message, url = request.requestURI.toString())
     }
+
+    @ExceptionHandler(value = [AuthenticationException::class])
+    @ResponseBody
+    fun error404(ex: Exception, request: HttpServletRequest): IErrorResponse<Boolean> {
+        logger.error("happen NullPointerException : " +
+                "url = ${request.requestURI} , " +
+                "message = ${ex.message}")
+        return IErrorResponse(message = "sorry！resource not fund", url = request.requestURI.toString())
+    }
+
+
 }
