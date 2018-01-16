@@ -4,6 +4,7 @@ import cn.eusunpower.config.IAuthenticationFacade
 import cn.eusunpower.model.ResponseData
 import cn.eusunpower.model.entity.UserEntity
 import cn.eusunpower.support.IErrorResponse
+import cn.eusunpower.support.Me
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.security.core.Authentication
@@ -20,8 +21,12 @@ class UserController {
     @ResponseBody
     fun currentUserName(authentication: Authentication): ResponseData<String> = ResponseData(data = authentication.name)
 
+    @GetMapping(value = ["/info"])
+    fun userInfo(@Me userEntity: UserEntity) =
+            ResponseData(data = userEntity)
+
     @GetMapping("/product/{id}")
-    fun getProduct(@PathVariable id: String): ResponseData<UserEntity> {
+    fun getProduct(@PathVariable id: String, @Me userEntity: UserEntity): ResponseData<UserEntity> {
         return ResponseData(data = authenticationFacade.getCurrentUser())
     }
 

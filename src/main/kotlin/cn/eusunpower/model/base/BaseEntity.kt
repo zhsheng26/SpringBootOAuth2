@@ -9,7 +9,7 @@ import javax.persistence.*
 
 @MappedSuperclass
 @EntityListeners(EntityListener::class)
-@JsonIgnoreProperties("createDate", "updateDate", "deleted")
+@JsonIgnoreProperties("createDate", "updateDate", "deleted", "description", "ext","status")
 open class BaseEntity : Serializable {
     @Id
     @GeneratedValue(generator = "uuid")
@@ -18,9 +18,6 @@ open class BaseEntity : Serializable {
     var id: String = ""
     var description: String = ""
     var ext: String = ""
-    val isNew: Boolean
-        get() = id.isEmpty()
-
     @Temporal(value = TemporalType.TIMESTAMP)
     private lateinit var updateDate: Date
 
